@@ -338,6 +338,19 @@
 // The hardware PWM output on pin D11 is required for variable spindle output voltages.
 #define VARIABLE_SPINDLE // Default enabled. Comment to disable.
 
+// Links the spindle speed (or the pen position) to the Z-axis position. This is useful for pen plotters 
+// with servo motor instead of spindle. The servo motor is connected to the Z-axis and the pen is raised 
+// or lowered gradually depending on the Z-axis position.
+#define SPINDLE_RPM_CONTROLLED_BY_Z_POS
+
+// The following parameters define the Z-axis position for the minimum and maximum RPM values.
+// Typically the min RPM value corresponds to the Z-axis position where the pen is raised and the max
+// RPM value corresponds to the Z-axis position where the pen is lowered.
+#ifdef SPINDLE_RPM_CONTROLLED_BY_Z_POS
+#define Z_MM_FOR_MAX_SPINDLE_RPM -1.000   // mm
+#define Z_MM_FOR_MIN_SPINDLE_RPM  1.000   // mm
+#endif
+
 // Used by variable spindle output only. This forces the PWM output to a minimum duty cycle when enabled.
 // The PWM pin will still read 0V when the spindle is disabled. Most users will not need this option, but
 // it may be useful in certain scenarios. This minimum PWM settings coincides with the spindle rpm minimum

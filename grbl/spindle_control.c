@@ -21,8 +21,8 @@
 
 #include "grbl.h"
 
-#define RC_SERVO_SHORT      7      // set min pulse duration to (7 = 0.5ms, 15 = 1.03ms, 20=1.40ms)    // RC Servo
-#define RC_SERVO_LONG       17      // set max pulse duration (38 = 2.49ms, 31 = 2.05ms)                // RC Servo
+#define RC_SERVO_SHORT      15      // set min pulse duration to (7 = 0.5ms, 15 = 1.03ms, 20=1.40ms)    // RC Servo
+#define RC_SERVO_LONG       31      // set max pulse duration (38 = 2.49ms, 31 = 2.05ms)                // RC Servo
 #define RC_SERVO_RANGE      (RC_SERVO_LONG-RC_SERVO_SHORT)                                              // RC Servo
 // #define RC_SERVO_INVERT  1       // Uncomment to invert servo direction                              // RC Servo
 
@@ -163,6 +163,40 @@ void spindle_stop()
         SPINDLE_TCCRA_REGISTER |= (1<<SPINDLE_COMB_BIT); // Ensure PWM output is enabled.
       }
     #endif
+  }
+
+  float _clamp_to_min_max(float value, float min_value, float max_value)
+  {
+    if (value < min_value) {
+      return min_value;
+    } else if (value > max_value) {
+      return max_value;
+    } else {
+      return value;
+    }
+  }
+
+  void spindle_set_speed_by_z_pos() {
+
+    float pos_z = system_convert_axis_steps_to_mpos(sys_position, Z_AXIS) - gc_state.coord_system[Z_AXIS];  // get the machine Z in mm	
+
+    // clamp z to min/max values
+    pos_z = _clamp_to_min_max(pos_z, 
+      min(Z_MM_FOR_MAX_SPINDLE_RPM, Z_MM_FOR_MIN_SPINDLE_RPM),
+      max(Z_MM_FOR_MAX_SPINDLE_RPM, Z_MM_FOR_MIN_SPINDLE_RPM)
+      );
+
+    // map it to the spindle speed
+    float rpm = 0;
+    if (Z_MM_FOR_MIN_SPINDLE_RPM < Z_MM_FOR_MAX_SPINDLE_RPM) {
+      // max RPM at larger height, min RPM at lower height
+      rpm = settings.rpm_min + (settings.rpm_max - settings.rpm_min) * (pos_z - Z_MM_FOR_MIN_SPINDLE_RPM) / (Z_MM_FOR_MAX_SPINDLE_RPM - Z_MM_FOR_MIN_SPINDLE_RPM);
+    } else if (Z_MM_FOR_MIN_SPINDLE_RPM > Z_MM_FOR_MAX_SPINDLE_RPM) {
+      // max RPM at lower height, min RPM at larger height
+      rpm = settings.rpm_min + (settings.rpm_max - settings.rpm_min) * (Z_MM_FOR_MIN_SPINDLE_RPM - pos_z) / (Z_MM_FOR_MIN_SPINDLE_RPM - Z_MM_FOR_MAX_SPINDLE_RPM);
+    }
+
+    spindle_set_speed(spindle_compute_pwm_value(rpm));
   }
 
 

@@ -50,6 +50,7 @@ uint8_t spindle_get_state();
   // Sets spindle PWM quickly for stepper ISR. Also called by spindle_set_state().
   // NOTE: 328p PWM register is 8-bit.
   void spindle_set_speed(uint8_t pwm_value);
+  void spindle_set_speed_by_z_pos();
   
   // Computes 328p-specific PWM register value for the given RPM for quick updating.
   uint8_t spindle_compute_pwm_value(float rpm);

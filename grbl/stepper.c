@@ -386,7 +386,11 @@ ISR(TIMER1_COMPA_vect)
 
       #ifdef VARIABLE_SPINDLE
         // Set real-time spindle output as segment is loaded, just prior to the first step.
-        spindle_set_speed(st.exec_segment->spindle_pwm);
+        #ifdef SPINDLE_RPM_CONTROLLED_BY_Z_POS
+          spindle_set_speed_by_z_pos();
+        #else
+          spindle_set_speed(st.exec_segment->spindle_pwm);
+        #endif
       #endif
 
     } else {
