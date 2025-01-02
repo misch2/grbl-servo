@@ -21,8 +21,20 @@
 
 #include "grbl.h"
 
-#define RC_SERVO_SHORT      15      // set min pulse duration to (7 = 0.5ms, 15 = 1.03ms, 20=1.40ms)    // RC Servo
-#define RC_SERVO_LONG       31      // set max pulse duration (38 = 2.49ms, 31 = 2.05ms)                // RC Servo
+// 1/1024 prescaler (standard):
+//   - freq = 61 Hz
+//   - max pulse length = 1/freq  = 16,4 ms  
+//   - min pulse length = max/256 = 0,064 ms 
+//  -> for smooth servo control between 1ms and 2ms pulse length, we need to set the servo range to 15 - 31
+
+// 1/256 prescaler (overclocked):
+//   - freq = 244 Hz
+//   - max pulse length = 1/freq  = 4.1 ms 
+//   - min pulse length = max/256 = 0.016 ms 
+//  -> for smooth servo control between 1ms and 2ms pulse length, we need to set the servo range to 62 - 125
+
+#define RC_SERVO_SHORT  62          // set min pulse duration
+#define RC_SERVO_LONG  125          // set max pulse duration
 #define RC_SERVO_RANGE      (RC_SERVO_LONG-RC_SERVO_SHORT)                                              // RC Servo
 // #define RC_SERVO_INVERT  1       // Uncomment to invert servo direction                              // RC Servo
 
