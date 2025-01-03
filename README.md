@@ -33,8 +33,17 @@ The main problem is that the only available timer has only 8 bit resolution whic
 I added a hack which uses 1/256 prescaler instead of the 1/64 prescaler which is used for the spindle control. This way, the servo can be controlled in 1024 steps which is much better. The downside is that it might not work for everyone (my cheap SG-90 servo is working fine with this though). We can now use 62 distinct servo positions within the 180 degrees range.
 
 
+## Credits
 
-
+Sources used for this fork:
+- https://www.instructables.com/How-to-Control-a-Servo-Using-GRBL/
+- https://www.buildlog.net/blog/2017/08/using-grbls-spindle-pwm-to-control-a-servo/
+- https://github.com/bdring/Grbl_Pen_Servo
+- https://github.com/vankesteren/grbl-servo
+- https://github.com/robottini/grbl-servo
+- https://github.com/gnea/grbl
+- https://github.com/lavolpecheprogramma/grbl-1-1h-servo
+- https://github.com/DWiskow/grbl1-1g-Servo
 
 ---
 
