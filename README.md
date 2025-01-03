@@ -1,5 +1,44 @@
+# grbl-servo with Z-axis control
+A fork of [grbl-servo](https://github.com/vankesteren/grbl-servo) which can control the servo via a virtual Z-axis instead of the spindle commands.
 
-# grbl-servo
+I've created this fork specifically for a use in an eggbot/spherebot machine where the servo is used to lift the pen up and down. The servo is controlled by the Z-axis commands (`G0 Z1`, `G1 Z-1`, etc.) instead of the spindle commands (`M3`, `M5`, etc.). This way, the servo can not only be controlled by any G-code sender that supports the Z-axis but because the servi mirrors the Z-axis it performs all the movements smoothly and without and sudden jerks. This comes especially handy on a machine like the eggbot where the pen is lifted up and down frequently and we don't want to *smash* the pen into the egg and damage it's tip (or the egg itself :egg:).
+
+See the [full diff](https://github.com/vankesteren/grbl-servo/compare/servo...misch2:grbl-servo:servo-on-z-axis) for more information.
+
+Example video of the eggbot in action: https://www.youtube.com/watch?v=NwPCL7hVFCk
+[![alt text](video_preview.png)](https://www.youtube.com/watch?v=NwPCL7hVFCk)
+
+The following parameters can (and need) to be configured:
+
+
+## Servo position relative to the virtual Z-axis
+
+### SPINDLE_RPM_CONTROLLED_BY_Z_POS (`config.h`)
+Set to 1 to enable the servo control via the Z-axis. When enabled, the servo will be controlled by the Z-axis commands (`G0 Z1`, `G1 Z-1`, etc.) instead of the spindle commands (`M3`, `M5`, etc.).
+This is the main feature of this fork.
+
+### Z_MM_FOR_MAX_SPINDLE_RPM (`config.h`)
+The servo will be at the maximum (=down) position when the Z-axis is at this position. Value is in mm and defaults to -1.0 (i.e below the Z=0 position).
+
+### Z_MM_FOR_MIN_SPINDLE_RPM (`config.h`)
+The servo will be at the minimum (=up) position when the Z-axis is at this position. Value is in mm and defaults to 1.0 (i.e above the Z=0 position).
+
+
+## Servo resolution
+
+[This blog post](https://www.buildlog.net/blog/2017/08/using-grbls-spindle-pwm-to-control-a-servo/) explains very nicely how the servo can be used with the grbl firmware and what the limitations are. 
+
+The main problem is that the only available timer has only 8 bit resolution which means that the servo can only be controlled in 256 steps but only like 1/10 of this range is really usable. This is a problem for the Z-axis control where the servo is used to lift the pen up and down. The pen should be lifted up and down smoothly and without any sudden jerks. But if there are only 16 steps between the 0 and 180 degree position of the servo, the pen will be lifted up and down in 11 degree steps which is not smooth at all.
+
+I added a hack which uses 1/256 prescaler instead of the 1/64 prescaler which is used for the spindle control. This way, the servo can be controlled in 1024 steps which is much better. The downside is that it might not work for everyone (my cheap SG-90 servo is working fine with this though). We can now use 62 distinct servo positions within the 180 degrees range.
+
+
+
+
+
+---
+
+# `grbl-servo` README
 `grbl-servo` can be used on Arduino to control an X-Y pen plotter, where the pen is operated by a small servo motor such as an SG90 micro servo.
 
 This repository is a fork of [grbl](https://github.com/gnea/grbl) with support for a servo. It is different from the other `grbl-servo` repositories in that it is a proper fork: I will reapply the hacked-on servo control when `grbl` updates by rebasing the default `servo` branch based on the upstream `grbl/master`.
@@ -29,7 +68,7 @@ The servo code was taken from commit [`21b4532`](https://github.com/lavolpechepr
 
 ---
 
-
+# `grbl` README
 
 
 ![GitHub Logo](https://github.com/gnea/gnea-Media/blob/master/Grbl%20Logo/Grbl%20Logo%20250px.png?raw=true)
