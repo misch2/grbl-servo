@@ -347,8 +347,8 @@
 // Typically the min RPM value corresponds to the Z-axis position where the pen is raised and the max
 // RPM value corresponds to the Z-axis position where the pen is lowered.
 #ifdef SPINDLE_RPM_CONTROLLED_BY_Z_POS
-#define Z_MM_FOR_MAX_SPINDLE_RPM -1.000   // mm
-#define Z_MM_FOR_MIN_SPINDLE_RPM  1.000   // mm
+#define Z_MM_FOR_MAX_SPINDLE_RPM -30.000   // mm
+#define Z_MM_FOR_MIN_SPINDLE_RPM  30.000   // mm
 #endif
 
 // Used by variable spindle output only. This forces the PWM output to a minimum duty cycle when enabled.
